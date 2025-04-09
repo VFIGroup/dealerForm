@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Location to Google Form</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: #f7f7f7;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .info {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Detecting Your Location</h1>
+  <p class="info" id="status">Please allow location access to continue...</p>
+
+  <script>
+    const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSehLNS_YELjLhvwgoL-YCBza0PMtspiNTXk5ji04F0m6_U0Wg/viewform";
+    const lngField = "entry.1482108222";
+    const latField = "entry.890492724";
+
+    function redirectToForm(lat, lng) {
+      const formURL = `${formBaseUrl}?usp=pp_url&${lngField}=${lng}&${latField}=${lat}`;
+      document.getElementById("status").textContent = "Redirecting you to the form...";
+      window.location.href = formURL;
+    }
+
+    function handleError(error) {
+      let message = "Could not detect your location.";
+      if (error.code === 1) message = "Permission denied. Please enable location services.";
+      else if (error.code === 2) message = "Location unavailable.";
+      else if (error.code === 3) message = "Location request timed out.";
+      document.getElementById("status").textContent = message;
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          redirectToForm(lat, lng);
+        }, handleError);
+      } else {
+        document.getElementById("status").textContent = "Geolocation is not supported by your browser.";
+      }
+    }
+
+    getLocation();
+  </script>
+
+</body>
+</html>
